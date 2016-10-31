@@ -1,0 +1,14 @@
+{
+  "name": "worker-server",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
+  },
+  "scripts": {
+    "prod": "meteor run --settings settings.json --port 8080",
+    "dev": "meteor run --settings settings_dev.json --port 8080"
+  },
+  "dependencies": {
+    "meteor-node-stubs": "~0.2.0"
+  }
+}
