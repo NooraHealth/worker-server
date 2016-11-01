@@ -6,6 +6,7 @@
 Meteor.startup ()->
   console.log ("Startup!")
   result = Salesforce.login Meteor.settings.SF_USER, Meteor.settings.SF_PASS, Meteor.settings.SF_TOKEN
+  console.log result
 
   exportNurseEducators = ->
     educators = Educators.find( {
