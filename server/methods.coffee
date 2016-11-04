@@ -98,14 +98,15 @@ Meteor.methods
     )
 
     callback = Meteor.bindEnvironment ( educator, err, ret ) ->
+      console.log "RETURN"
       if err
         console.log "Error exporting nurse educator"
         console.log err
-        Educators.update { _id: educator._id }, { $set: { processing: false }}
       else
         console.log "Success exporting nurseeducator #{educator._id}"
-        Educators.update { _id: educator._id }, { $set: { contact_salesforce_id: ret.id, processing: false }}
+        Educators.update { _id: educator._id }, { $set: { contact_salesforce_id: ret.id, needs_update: false }}
 
     #insert into the Salesforce database
     for educator in mapped
-      Salesforce.sobject("Contact").create educator.salesforce_contact, callback.bind(this, educator.educator)
+      console.log("Upseting")
+      Salesforce.sobject("Contact").upsert educator.salesforce_contact, "Trainee_Id__c", callback.bind(this, educator.educator)

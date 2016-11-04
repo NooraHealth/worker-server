@@ -25,6 +25,14 @@ Meteor.startup ()->
       console.log "EXPORTING FACILITY ROLES"
       Meteor.call("exportFacilityRoles", educators)
 
+  updateEducatorRecords = ->
+    educators = Educators.find({
+      needs_update: true
+    }).fetch()
+    console.log educators
+    if educators.length > 0
+      Meteor.call "exportNurseEducators", educators
+
   importFacilities = ->
     console.log "IMPORTING FACILITIES"
     Meteor.call "importFacilities"
@@ -33,7 +41,8 @@ Meteor.startup ()->
     console.log "IMPORTING THE EDUCATORS"
     Meteor.call "importEducators"
 
-  Meteor.setInterval importEducators, 100000
-  Meteor.setInterval importFacilities, 100000
-  Meteor.setInterval exportFacilityRoles, 10000
+  # Meteor.setInterval importEducators, 100000
+  # Meteor.setInterval importFacilities, 100000
+  # Meteor.setInterval exportFacilityRoles, 10000
   Meteor.setInterval exportNurseEducators, 10000
+  # Meteor.setInterval updateEducatorRecords, 10000
