@@ -79,6 +79,7 @@ Meteor.methods
           "Name" : getRoleName(educator)
           "Department__c": educator.department,
           "Id": educator.facility_role_salesforce_id,
+          "Facility__c": educator.facility_salesforce_id,
           "Role_With_Noora_Program__c": Meteor.settings.FACILITY_ROLE_TYPE,
         }
       }
@@ -89,6 +90,7 @@ Meteor.methods
         console.log "Error inserting facility role into Salesforce"
         console.log err
       else
+        console.log "Success updating facility role #{educator._id}"
         Educators.update { _id: educator._id }, { $set:{ needs_update: false }}
 
     #insert into the Salesforce database
@@ -126,7 +128,7 @@ Meteor.methods
         console.log err
       else
         salesforce_id = if educator.contact_salesforce_id == "" then ret.id else educator.contact_salesforce_id
-        console.log "Success exporting nurseeducator #{salesforce_id}"
+        console.log "Success exporting contact #{educator._id}"
         Educators.update { uniqueId: educator.uniqueId }, { $set: { contact_salesforce_id: salesforce_id, needs_update: false }}
 
     #insert into the Salesforce database
