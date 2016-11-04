@@ -37,7 +37,7 @@ EducatorsSchema = new SimpleSchema
     type: Number
     defaultValue: ""
     optional: true
-  processing:
+  needs_update:
     type: Boolean
     optional: true
     defaultValue: false

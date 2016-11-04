@@ -103,7 +103,9 @@ Meteor.methods
         console.log err
       else
         console.log "Success exporting nurseeducator #{educator._id}"
-        Educators.update { _id: educator._id }, { $set: { contact_salesforce_id: ret.id, needs_update: false }}
+        salesforce_id = if educator.contact_salesforce_id == "" then ret.id else educator.contact_salesforce_id
+        console.log "the salesforece id #{salesforce_id}"
+        Educators.update { uniqueId: educator.uniqueId }, { $set: { contact_salesforce_id: ret.id, needs_update: false }}
 
     #insert into the Salesforce database
     for educator in mapped
