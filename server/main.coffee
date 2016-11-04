@@ -41,8 +41,8 @@ Meteor.startup ()->
     console.log "IMPORTING THE EDUCATORS"
     Meteor.call "importEducators"
 
-  # Meteor.setInterval importEducators, 100000
-  # Meteor.setInterval importFacilities, 100000
+  Meteor.setInterval importEducators, 100000
+  Meteor.setInterval importFacilities, 100000
   Meteor.setInterval exportFacilityRoles, 10000
   Meteor.setInterval exportNurseEducators, 10000
   Meteor.setInterval updateEducatorRecords, 10000
