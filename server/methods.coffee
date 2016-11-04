@@ -91,14 +91,13 @@ Meteor.methods
           "MobilePhone" : educator.phone,
           "Department" : educator.department,
           "AccountId" : facility.delivery_partner,
-          "Trainee_Id__c": educator.uniqueId,
+          "Trainee_ID__c": educator.uniqueId,
           "RecordTypeId": Meteor.settings.CONTACT_RECORD_TYPE
         }
       }
     )
 
     callback = Meteor.bindEnvironment ( educator, err, ret ) ->
-      console.log "RETURN"
       if err
         console.log "Error exporting nurse educator"
         console.log err
@@ -108,5 +107,5 @@ Meteor.methods
 
     #insert into the Salesforce database
     for educator in mapped
-      console.log("Upseting")
-      Salesforce.sobject("Contact").upsert educator.salesforce_contact, "Trainee_Id__c", callback.bind(this, educator.educator)
+      console.log educator
+      Salesforce.sobject("Contact").upsert educator.salesforce_contact, "Trainee_ID__c", callback.bind(this, educator.educator)
