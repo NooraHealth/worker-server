@@ -1,6 +1,7 @@
 { Educators } = require "../imports/api/collections/educators.coffee"
 { Facilities } = require "../imports/api/collections/facilities.coffee"
 { isInt } = require "./utils"
+{ getRoleName } = require "./utils"
 
 Meteor.methods
 
@@ -49,10 +50,35 @@ Meteor.methods
       return {
         educator: educator
         salesforce_role: {
-          "Name" : "Educator Trainee -- #{ educator.first_name } #{ educator.last_name }",
-          "Facility__c" : educator.facility_salesforce_id,
-          "Contact__c" : educator.contact_salesforce_id,
+          "Name" : getRoleName(educator)
           "Department__c": educator.department,
+          "Facility__c": educator.facility_salesforce_id,
+          "Contact__c": educator.contact_salesforce_id
+          "Role_With_Noora_Program__c": Meteor.settings.FACILITY_ROLE_TYPE
+        }
+      }
+    )
+
+    callback = Meteor.bindEnvironment ( educator, err, ret ) ->
+      if err
+        console.log "Error inserting facility role into Salesforce"
+        console.log err
+      else
+        Educators.update { _id: educator._id }, { $set: { facility_role_salesforce_id: ret.id }}
+
+    #insert into the Salesforce database
+    for role in mapped
+      Salesforce.sobject("Facility_Role__c").create role.salesforce_role, callback.bind(this, role.educator)
+
+  "updateFacilityRoles": ( educators )->
+    console.log "UPDATIKNG FACLITIY ROLES"
+    mapped = educators.map( (educator) ->
+      return {
+        educator: educator
+        salesforce_role: {
+          "Name" : getRoleName(educator)
+          "Department__c": educator.department,
+          "Id": educator.facility_role_salesforce_id,
           "Role_With_Noora_Program__c": Meteor.settings.FACILITY_ROLE_TYPE,
         }
       }
@@ -62,17 +88,14 @@ Meteor.methods
       if err
         console.log "Error inserting facility role into Salesforce"
         console.log err
-        Educators.update { _id: educator._id }, { $set: { processing: false }}
       else
-        console.log "Success exporting role #{educator._id}"
-        Educators.update { _id: educator._id }, { $set: { facility_role_salesforce_id: ret.id, processing: false}}
+        Educators.update { _id: educator._id }, { $set:{ needs_update: false }}
 
     #insert into the Salesforce database
     for role in mapped
-      Salesforce.sobject("Facility_Role__c").create role.salesforce_role, callback.bind(this, role.educator)
+      Salesforce.sobject("Facility_Role__c").update role.salesforce_role, "Id", callback.bind(this, role.educator)
 
-  "exportNurseEducators": ( educators )->
-    console.log "Exporting nurse educaotrs"
+  "upsertEducators": ( educators )->
     mapped = educators.map( (educator) ->
       facility = Facilities.findOne {
         salesforce_id: educator.facility_salesforce_id
@@ -102,10 +125,9 @@ Meteor.methods
         console.log "Error exporting nurse educator"
         console.log err
       else
-        console.log "Success exporting nurseeducator #{educator._id}"
         salesforce_id = if educator.contact_salesforce_id == "" then ret.id else educator.contact_salesforce_id
-        console.log "the salesforece id #{salesforce_id}"
-        Educators.update { uniqueId: educator.uniqueId }, { $set: { contact_salesforce_id: ret.id, needs_update: false }}
+        console.log "Success exporting nurseeducator #{salesforce_id}"
+        Educators.update { uniqueId: educator.uniqueId }, { $set: { contact_salesforce_id: salesforce_id, needs_update: false }}
 
     #insert into the Salesforce database
     for educator in mapped

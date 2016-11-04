@@ -12,9 +12,8 @@ Meteor.startup ()->
     educators = Educators.find( {
       contact_salesforce_id: "",
     }).fetch()
-    console.log "exporting nurse educators?"
     if educators.length > 0
-      Meteor.call("exportNurseEducators", educators)
+      Meteor.call("upsertEducators", educators)
 
   exportFacilityRoles = ->
     educators = Educators.find({
@@ -30,9 +29,9 @@ Meteor.startup ()->
     educators = Educators.find({
       needs_update: true
     }).fetch()
-    console.log educators
     if educators.length > 0
-      Meteor.call "exportNurseEducators", educators
+      Meteor.call "upsertEducators", educators
+      Meteor.call "updateFacilityRoles", educators
 
   importFacilities = ->
     console.log "IMPORTING FACILITIES"
@@ -44,6 +43,6 @@ Meteor.startup ()->
 
   # Meteor.setInterval importEducators, 100000
   # Meteor.setInterval importFacilities, 100000
-  # Meteor.setInterval exportFacilityRoles, 10000
+  Meteor.setInterval exportFacilityRoles, 10000
   Meteor.setInterval exportNurseEducators, 10000
   Meteor.setInterval updateEducatorRecords, 10000
