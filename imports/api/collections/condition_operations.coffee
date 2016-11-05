@@ -11,7 +11,9 @@ ConditionOperationsSchema = new SimpleSchema
     type:String
   salesforce_id:
     type:String
-  facility:
+  facility_name:
+    type:String
+  facility_salesforce_id:
     type:String
 
 ConditionOperations.attachSchema ConditionOperationsSchema

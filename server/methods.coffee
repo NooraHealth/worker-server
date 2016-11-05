@@ -11,7 +11,11 @@ Meteor.methods
     console.log facilities
     for facility in facilities
       if not Facilities.findOne { salesforce_id: facility.Id }
-        Facilities.insert { name: facility.Name, salesforce_id: facility.Id, delivery_partner: facility.Delivery_Partner__c }
+        Facilities.insert {
+          name: facility.Name,
+          salesforce_id: facility.Id,
+          delivery_partner: facility.Delivery_Partner__c
+        }
 
   "importConditionOperations": ->
     console.log "Getting condition opeartions"
@@ -19,10 +23,12 @@ Meteor.methods
     console.log operations
     for operation in operations
       if not ConditionOperations.findOne { salesforce_id: operation.Id }
+        facility = operation.Facility__r
         ConditionOperations.insert {
           name: operation.Name,
           salesforce_id: operation.Id,
-          facility: operation.Facility__c
+          facility_salesforce_id: operation.Facility__c
+          facility_name: facility.Name
         }
         console.log ConditionOperations.find({}).fetch()
 
@@ -49,7 +55,7 @@ Meteor.methods
 
   "fetchConditionOperationsFromSalesforce": ->
     console.log "Fetching condition operations"
-    result = Salesforce.query "SELECT Id, Name, Facility__c FROM Condition_Operation__c"
+    result = Salesforce.query "SELECT Id, Name, Facility__c, Facility__r.Name FROM Condition_Operation__c"
     return result?.response?.records
 
   "fetchFacilitiesFromSalesforce": ->
