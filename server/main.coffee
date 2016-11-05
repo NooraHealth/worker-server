@@ -1,6 +1,8 @@
 { Meteor } = require 'meteor/meteor';
 { Educators } = require '../imports/api/collections/educators.coffee'
 { Facilities } = require '../imports/api/collections/facilities.coffee'
+{ ConditionOperations } = require '../imports/api/collections/condition_operations.coffee'
+
 # { LoadTest } = require './load_test.coffee'
 
 Meteor.startup ()->
@@ -37,12 +39,19 @@ Meteor.startup ()->
     console.log "IMPORTING FACILITIES"
     Meteor.call "importFacilities"
 
+  importConditionOperations = ->
+    console.log "IMPORTING CONDITION OPERATIONS"
+    Meteor.call "importConditionOperations"
+
   importEducators = ->
     console.log "IMPORTING THE EDUCATORS"
     Meteor.call "importEducators"
 
-  Meteor.setInterval importEducators, 100000
-  Meteor.setInterval importFacilities, 100000
-  Meteor.setInterval exportFacilityRoles, 10000
-  Meteor.setInterval exportNurseEducators, 10000
-  Meteor.setInterval updateEducatorRecords, 10000
+  console.log "something something"
+  importConditionOperations()
+  # Meteor.setInterval importEducators, 100000
+  # Meteor.setInterval importFacilities, 100000
+  # Meteor.setInterval importConditionOperations, 100000
+  # Meteor.setInterval exportFacilityRoles, 10000
+  # Meteor.setInterval exportNurseEducators, 10000
+  # Meteor.setInterval updateEducatorRecords, 10000

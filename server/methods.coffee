@@ -1,5 +1,6 @@
 { Educators } = require "../imports/api/collections/educators.coffee"
 { Facilities } = require "../imports/api/collections/facilities.coffee"
+{ ConditionOperations } = require '../imports/api/collections/condition_operations.coffee'
 { isInt } = require "./utils"
 { getRoleName } = require "./utils"
 
@@ -11,6 +12,19 @@ Meteor.methods
     for facility in facilities
       if not Facilities.findOne { salesforce_id: facility.Id }
         Facilities.insert { name: facility.Name, salesforce_id: facility.Id, delivery_partner: facility.Delivery_Partner__c }
+
+  "importConditionOperations": ->
+    console.log "Getting condition opeartions"
+    operations = Meteor.call("fetchConditionOperationsFromSalesforce");
+    console.log operations
+    for operation in operations
+      if not ConditionOperations.findOne { salesforce_id: operation.Id }
+        ConditionOperations.insert {
+          name: operation.Name,
+          salesforce_id: operation.Id,
+          facility: operation.Facility__c
+        }
+        console.log ConditionOperations.find({}).fetch()
 
   "importEducators": ->
     records = Meteor.call("fetchEducatorsFromSalesforce")
@@ -32,6 +46,11 @@ Meteor.methods
           phone: phone or 0
           uniqueId: educator.Trainee_ID__c
         }
+
+  "fetchConditionOperationsFromSalesforce": ->
+    console.log "Fetching condition operations"
+    result = Salesforce.query "SELECT Id, Name, Facility__c FROM Condition_Operation__c"
+    return result?.response?.records
 
   "fetchFacilitiesFromSalesforce": ->
     result = Salesforce.query "SELECT Id, Name, Delivery_Partner__c FROM Facility__c"
