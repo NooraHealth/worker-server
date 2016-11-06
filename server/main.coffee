@@ -47,7 +47,6 @@ Meteor.startup ()->
     console.log "IMPORTING THE EDUCATORS"
     Meteor.call "importEducators"
 
-  ConditionOperations.remove({})
   importConditionOperations()
   # Meteor.setInterval importEducators, 100000
   # Meteor.setInterval importFacilities, 100000
