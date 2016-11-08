@@ -3,9 +3,9 @@
 { ConditionOperations } = require '../imports/api/collections/condition_operations.coffee'
 { isInt } = require "./utils"
 { getRoleName } = require "./utils"
+{ getOperationRoleName } = require "./utils"
 
 Meteor.methods
-
   "importFacilities": ->
     facilities = Meteor.call("fetchFacilitiesFromSalesforce");
     console.log facilities
@@ -70,6 +70,34 @@ Meteor.methods
       FROM Facility_Role__c WHERE Role_With_Noora_Program__c = 'Trainee'"
     return result?.response?.records
 
+  "exportConditionOperationRoles": ( educators )->
+    roles = educators.map( (educator) ->
+      return educator.condition_operations
+    )
+
+    mapped = roles.map ( role )->
+      return {
+        educator: role.educator
+        operation_role: {
+          "Name" : getOperationRoleName(educator)
+          "Department__c": educator.is_active,
+          "Facility__c": educator.facility_salesforce_id,
+          "Contact__c": educator.contact_salesforce_id,
+          "RecordTypeId": "012j0000000udTH"
+        }
+      }
+
+    callback = Meteor.bindEnvironment ( educator, err, ret ) ->
+      if err
+        console.log "Error inserting facility role into Salesforce"
+        console.log err
+      else
+        Educators.update { _id: educator._id }, { $set: { facility_role_salesforce_id: ret.id }}
+
+    #insert into the Salesforce database
+    for role in mapped
+      Salesforce.sobject("Condition_Operation_Role__c").create role.operation_role, callback.bind(this, role.educator)
+
   "exportFacilityRoles": ( educators )->
     mapped = educators.map( (educator) ->
       return {
@@ -96,7 +124,6 @@ Meteor.methods
       Salesforce.sobject("Facility_Role__c").create role.salesforce_role, callback.bind(this, role.educator)
 
   "updateFacilityRoles": ( educators )->
-    console.log "UPDATIKNG FACLITIY ROLES"
     mapped = educators.map( (educator) ->
       return {
         educator: educator
