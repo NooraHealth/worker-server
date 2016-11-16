@@ -48,16 +48,5 @@ EducatorsSchema = new SimpleSchema
 
 Educators.attachSchema EducatorsSchema
 
-Educators.helpers({
-  operationRolesAsArray: ->
-    roleIds = Object.keys(this.condition_operations)
-    return roleIds.map (id)->
-      return {
-        name: name
-        salesforce_id: this.condition_operations[id].salesforce_id
-        is_active: this.condition_operations[i].is_active
-      }
-});
-
 module.exports.Educators = Educators
 module.exports.EducatorsSchema = EducatorsSchema

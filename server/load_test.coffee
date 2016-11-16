@@ -21,6 +21,7 @@ Factory.define "educator", Educators, {
   last_name: ()-> faker.name.lastName()
   department: ()-> faker.lorem.words()
   phone: ()-> faker.random.number()
+  needs_update: ()-> return true
 }
 
 Factory.define "facility", Facilities
@@ -46,5 +47,4 @@ LoadTest = ( numEducators )->
     Factory.create "educator", educator
     i++
 
-  console.log Educators.find({}).fetch()
 module.exports.LoadTest = LoadTest
