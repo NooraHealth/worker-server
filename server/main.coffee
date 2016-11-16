@@ -7,8 +7,7 @@
 { LoadTest } = require './load_test.coffee'
 
 Meteor.startup ()->
-  # Educators.remove {}
-  LoadTest(20)
+  # LoadTest(20)
   result = Salesforce.login Meteor.settings.SF_USER, Meteor.settings.SF_PASS, Meteor.settings.SF_TOKEN
 
   exportToSalesforce = ( educator )->
@@ -22,8 +21,7 @@ Meteor.startup ()->
       educator.facility_role_salesforce_id = facilityRoleSalesforceId
       educator.needs_update = false
       Educators.update { uniqueId: educator.uniqueId }, {$set: educator }
-      console.log "After everything"
-      console.log Educators.findOne {uniqueId: educator.uniqueId}
+      console.log "Success exporting " + educator.first_name
     ,(err) ->
       console.log "error upserting educators"
       console.log err
@@ -39,8 +37,7 @@ Meteor.startup ()->
       educator.facility_role_salesforce_id = facilityRoleSalesforceId
       educator.needs_update = false
       Educators.update { uniqueId: educator.uniqueId }, {$set: educator }
-      console.log "After everything"
-      console.log Educators.findOne {uniqueId: educator.uniqueId}
+      console.log "Success updating " + educator.first_name
     ,(err) ->
       console.log "error upserting educators"
       console.log err
@@ -71,8 +68,6 @@ Meteor.startup ()->
     if educators.length > 0
       for educator in educators
         updateInSalesforce( educator )
-      Meteor.call "upsertEducators", educators
-      Meteor.call "updateFacilityRoles", educators
 
   importFacilities = ->
     console.log "IMPORTING FACILITIES"
@@ -87,11 +82,10 @@ Meteor.startup ()->
     Meteor.call "importEducators"
 
   console.log "Check 4"
-  exportNurseEducators()
   # importConditionOperations()
   # Meteor.setInterval importEducators, 100000
   # Meteor.setInterval importFacilities, 100000
   # Meteor.setInterval importConditionOperations, 100000
   # Meteor.setInterval exportFacilityRoles, 10000
-  # Meteor.setInterval exportNurseEducators, 10000
-  # Meteor.setInterval updateEducatorRecords, 10000
+  Meteor.setInterval exportNurseEducators, 10000
+  Meteor.setInterval updateEducatorRecords, 10000
